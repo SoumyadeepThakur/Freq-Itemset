@@ -31,7 +31,6 @@ def extract_data(path):
 if __name__ == "__main__":
     path = "Online-Retail.xlsx"
     student_dict = extract_data(path)
-    #print(student_dict)
     with open ('trans_data.json', 'w') as outfile:
         json.dump(student_dict,outfile)
     outfile.close()
