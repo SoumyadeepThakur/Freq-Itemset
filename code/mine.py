@@ -54,22 +54,33 @@ class FreqItemSet:
 			indices.append(bisect.bisect_left(itemset, item))
 
 		#print(indices,"\n")
-		code_val=0
+		indices = sorted(indices)
+		code_str=str('')
 		for i in indices:
-			code_val = code_val + pow(2,i)
+			temp = str(i)
+			code_str+=str(len(temp))
+			code_str+=temp
 
+		code_val = int(code_str)
 		return code_val
 
 	def _get_iset(self,code):
 
-		bitstr = bin(code)[2:]
-		length = len(bitstr)
-		indices = [i for i in range(length) if bitstr[length-1-i] == '1']
+		code_str = str(code)
+		i=0
+		indices = list()
+		while i<len(code_str):
+			digits = int(code_str[i:i+1])
+			indices.append(int(code_str[i+1:i+1+digits]))
+			i+=digits+1
+
 		iset = list()
-		for i in indices:
-			iset.append(itemset[i])
+		for index in indices:
+			iset.append(itemset[index])
 
 		return iset
+
+
 
 	def process_window(self):
 		global cur_list
@@ -77,6 +88,8 @@ class FreqItemSet:
 		print(len(trans_window), self.wstart, self.wend)
 		trans_no = self.wstart
 		for transaction in trans_window:
+			if len(transaction) > 120:
+				continue
 			trans_no+=1
 			for i in range(self.max_iset_size): # all possible subsets of max size max_iset_size of transaction set 
 				trans_subset = list(combinations(transaction, r=(i+1)))
@@ -87,6 +100,8 @@ class FreqItemSet:
 						newc = cur_list[code][0]*pow(self.decay_rate,(trans_no-cur_list[code][1])) + 1
 						cur_list[code] = list([newc, trans_no])
 					else:
+						if len(cur_list) >= 500000:
+							raise ValueError("Out of memory")
 						cur_list[code] = list([1,trans_no])
 
 			
@@ -139,10 +154,28 @@ if __name__ == "__main__":
 	fis.process_window()
 	fis.prune(1.5)
 	fis.process_window()
-	fis.prune(1.5)
-	fis.process_window()
 	fis.prune(2)
 	fis.process_window()
-	fis.prune(2)
+	fis.prune(3)
+	'''
+	fis.process_window()
+	fis.prune(5)
+	fis.process_window()
+	fis.prune(8)
+	fis.process_window()
+	fis.prune(10)
+	fis.process_window()
+	fis.prune(12)
+	fis.process_window()
+	fis.prune(15)
+	fis.process_window()
+	fis.prune(15)
+	fis.process_window()
+	fis.prune(18)
+	fis.process_window()
+	fis.prune(20)
+	fis.process_window()
+	fis.prune(25)
+	'''
 	fis.show_topk()
 
