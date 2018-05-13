@@ -18,8 +18,9 @@ def parse_file(path):
 if __name__ == "__main__":
 	transactions = parse_file('trans_data.json')
 	result = []
+	transac = transactions[0:20]
 	minsup = int(input('Enter minimum support: '))
-	for itemset,support in find_frequent_itemsets(transactions, minsup, True): # 2nd parameter is the minimum support value.
+	for itemset,support in find_frequent_itemsets(transac, minsup, True): # 2nd parameter is the minimum support value.
 		result.append((itemset,support))
 
 	result = sorted(result, key=lambda i: i[0])
